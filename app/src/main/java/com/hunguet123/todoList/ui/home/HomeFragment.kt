@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.viewModelScope
 import com.hunguet123.todoList.R
+import com.hunguet123.todoList.data.Task
 
 import com.hunguet123.todoList.ui.add.AddFragment
 import com.hunguet123.todoList.ui.delete.DeleteFragment
@@ -14,8 +16,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private val viewModel: HomeViewModel by viewModel()
-
-    private val taskAdapter = TaskAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -27,12 +27,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setupViews() {
-        recyclerTasks.adapter = taskAdapter
+        recyclerTasks.adapter = TaskAdapter
     }
 
     private fun listenEvents() {
         cardAdd.setOnClickListener {
-            // doajn nay chuwa hieu
             val fragment = AddFragment().apply {
                 onPopBackstack = {
                     viewModel.getTasks()
@@ -44,10 +43,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 ?.commit()
         }
 
-        taskAdapter.apply {
-            onClickDeleteItem = { position ->
-                viewModel.deleteItem(position)
-                viewModel.getTasks()
+        TaskAdapter.apply {
+            getFragmentDelete = { position ->
+                val fragment = DeleteFragment().apply {
+                    val bundle = Bundle()
+                    bundle.putInt("key", position)
+                    arguments = bundle
+                    onPopBackstack = {
+                        viewModel.getTasks()
+                    }
+                }
+                activity?.supportFragmentManager?.beginTransaction()
+                    ?.add(R.id.frameMain, fragment)
+                    ?.addToBackStack(null)
+                    ?.commit()
             }
         }
     }
@@ -63,7 +72,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
         viewModel.tasks.observe(viewLifecycleOwner) { tasks ->
-            taskAdapter.submitList(tasks)
+            TaskAdapter.submitList(tasks)
             textCount.text = getString(R.string.text_count, tasks.size)
         }
     }

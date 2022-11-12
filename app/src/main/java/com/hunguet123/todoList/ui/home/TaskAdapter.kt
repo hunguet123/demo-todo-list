@@ -11,14 +11,13 @@ import com.hunguet123.todoList.R
 import com.hunguet123.todoList.data.Task
 import kotlinx.android.synthetic.main.item_task.view.*
 
-class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffUtil()) {
-    var onClickDeleteItem : (Int) -> Unit = { _ ->}
-    var getFragmentDelete : () -> Unit = { }
+object TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffUtil()) {
+    var getFragmentDelete : (Int) -> Unit = {_ ->}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val itemView =
             LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-        return TaskViewHolder(itemView, onClickDeleteItem)
+        return TaskViewHolder(itemView, getFragmentDelete)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
@@ -26,11 +25,11 @@ class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffUtil()
     }
 
     class TaskViewHolder(itemView: View,
-                         onClickDeleteItem : (Int) -> Unit
+                         getFragmentDelete : (Int) -> Unit
     ) : ViewHolder(itemView ) {
         init {
             itemView.buttonDelete.setOnClickListener {
-                onClickDeleteItem(adapterPosition)
+                getFragmentDelete(adapterPosition)
             }
         }
 

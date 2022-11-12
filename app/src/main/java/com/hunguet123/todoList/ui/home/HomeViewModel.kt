@@ -22,13 +22,4 @@ class HomeViewModel : ViewModel(), KoinComponent {
             error.value = e.message
         }
     }
-
-    fun deleteItem(position : Int) = viewModelScope.launch {
-        try {
-            taskRepository.deleteTask(tasks.value?.get(position) )
-        } catch (err : Exception) {
-            error.value = err.message
-        }
-
-    }
 }
