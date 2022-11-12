@@ -9,6 +9,8 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+
+// gán viewModel vào
 class AddViewModel : ViewModel(), KoinComponent {
 
     private val taskRepository: TaskRepository by inject()

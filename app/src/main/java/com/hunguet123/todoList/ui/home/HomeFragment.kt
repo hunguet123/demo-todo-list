@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.hunguet123.todoList.R
 
 import com.hunguet123.todoList.ui.add.AddFragment
+import com.hunguet123.todoList.ui.delete.DeleteFragment
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -18,9 +19,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        setupViews()
         listenEvents()
+        setupViews()
+
         initData()
         observeData()
     }
@@ -31,6 +32,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun listenEvents() {
         cardAdd.setOnClickListener {
+            // doajn nay chuwa hieu
             val fragment = AddFragment().apply {
                 onPopBackstack = {
                     viewModel.getTasks()
@@ -41,6 +43,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 ?.addToBackStack(null)
                 ?.commit()
         }
+
+        taskAdapter.apply {
+            onClickDeleteItem = { position ->
+                viewModel.deleteItem(position)
+                viewModel.getTasks()
+            }
+        }
     }
 
     private fun initData() {
@@ -50,7 +59,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun observeData() {
         viewModel.error.observe(viewLifecycleOwner) { errorMsg ->
             context?.run {
-                Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
             }
         }
         viewModel.tasks.observe(viewLifecycleOwner) { tasks ->

@@ -12,22 +12,31 @@ import com.hunguet123.todoList.data.Task
 import kotlinx.android.synthetic.main.item_task.view.*
 
 class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffUtil()) {
+    var onClickDeleteItem : (Int) -> Unit = { _ ->}
+    var getFragmentDelete : () -> Unit = { }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val itemView =
             LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-        return TaskViewHolder(itemView)
+        return TaskViewHolder(itemView, onClickDeleteItem)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         holder.bindData(getItem(position))
     }
 
-    class TaskViewHolder(itemView: View) : ViewHolder(itemView) {
+    class TaskViewHolder(itemView: View,
+                         onClickDeleteItem : (Int) -> Unit
+    ) : ViewHolder(itemView ) {
+        init {
+            itemView.buttonDelete.setOnClickListener {
+                onClickDeleteItem(adapterPosition)
+            }
+        }
 
         @SuppressLint("SetTextI18n")
         fun bindData(task: Task) {
-            itemView.textTitle.text = (adapterPosition + 1).toString() + ". " + task.title
+            itemView.textTitle.text = task.title
             itemView.textDescription.text = task.description
         }
     }

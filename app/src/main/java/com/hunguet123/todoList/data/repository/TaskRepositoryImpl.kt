@@ -14,4 +14,11 @@ class TaskRepositoryImpl(
     override suspend fun addTask(task: Task) {
         database.taskDao().insertTask(task)
     }
+
+    override suspend fun deleteTask(task: Task?) {
+        if (task != null) {
+            database.taskDao().deleteTask(task)
+        }
+    }
+
 }
